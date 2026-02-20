@@ -1,5 +1,5 @@
 {
-  "name": "@tinyland-inc/tinyland-metrics",
+  "name": "@tummycrypt/tinyland-metrics",
   "version": "0.1.0",
   "description": "In-memory metrics collector and SSE event stream manager for web applications",
   "type": "module",
@@ -12,7 +12,10 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "LICENSE"],
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -37,5 +40,9 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

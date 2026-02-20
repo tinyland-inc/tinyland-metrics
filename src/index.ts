@@ -1,5 +1,5 @@
 /**
- * @tinyland-inc/tinyland-metrics
+ * @tummycrypt/tinyland-metrics
  *
  * In-memory metrics collector and SSE event stream manager
  * for web applications.
