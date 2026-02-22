@@ -1,6 +1,6 @@
 {
   "name": "@tummycrypt/tinyland-metrics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "In-memory metrics collector and SSE event stream manager for web applications",
   "type": "module",
   "main": "./dist/index.js",
