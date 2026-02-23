@@ -1,11 +1,11 @@
-/**
- * @tummycrypt/tinyland-metrics
- *
- * In-memory metrics collector and SSE event stream manager
- * for web applications.
- */
 
-// Configuration
+
+
+
+
+
+
+
 export {
   configureMetrics,
   getMetricsConfig,
@@ -17,7 +17,7 @@ export type {
   ResolvedMetricsConfig,
 } from './config.js';
 
-// Types
+
 export type {
   MetricsData,
   PageMetrics,
@@ -29,7 +29,7 @@ export type {
   TrafficSource,
 } from './types.js';
 
-// Metrics Collector
+
 export {
   MetricsCollector,
   createMetricsCollector,
@@ -37,7 +37,7 @@ export {
   resetMetricsCollectorSingleton,
 } from './metrics-collector.js';
 
-// Event Stream Manager
+
 export {
   EventStreamManager,
   getEventStreamManager,

@@ -1,12 +1,12 @@
-/**
- * In-memory metrics collector with page view tracking, session tracking,
- * traffic source analysis, bounce rate calculation, and optional JSON
- * persistence.
- *
- * All environment coupling is resolved through the DI config layer
- * (see config.ts).  Timers use `.unref()` so they never keep the
- * process alive on their own.
- */
+
+
+
+
+
+
+
+
+
 
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
@@ -32,22 +32,22 @@ export class MetricsCollector {
   constructor() {
     const cfg = getMetricsConfig();
 
-    // Load persisted data (fire-and-forget; errors handled internally)
+    
     this.loadPersistedData();
 
-    // Periodic cleanup of stale sessions
+    
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldSessions();
     }, cfg.cleanupIntervalMs);
     this.cleanupInterval.unref();
 
-    // Periodic persistence
+    
     this.persistInterval = setInterval(() => {
       this.persistData();
     }, cfg.persistIntervalMs);
     this.persistInterval.unref();
 
-    // Optional shutdown hook
+    
     if (cfg.registerShutdownHook) {
       process.on('beforeExit', () => {
         this.destroy();
@@ -55,11 +55,11 @@ export class MetricsCollector {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Public API
-  // ---------------------------------------------------------------------------
+  
+  
+  
 
-  /** Track a page view, creating page and session entries as needed. */
+  
   trackPageView(
     sessionId: string,
     path: string,
@@ -67,7 +67,7 @@ export class MetricsCollector {
     referrer?: string,
     userAgent?: string,
   ): void {
-    // Update page metrics
+    
     let pageData = this.pageMetrics.get(path);
     if (!pageData) {
       pageData = {
@@ -82,7 +82,7 @@ export class MetricsCollector {
     pageData.uniqueVisitors.add(sessionId);
     pageData.lastAccessed = new Date();
 
-    // Update session metrics
+    
     let session = this.sessionMetrics.get(sessionId);
     if (!session) {
       session = {
@@ -106,29 +106,29 @@ export class MetricsCollector {
     this.requestCount++;
   }
 
-  /** Track an error occurrence. */
+  
   trackError(_sessionId?: string, _errorType?: string): void {
     this.errorCount++;
   }
 
-  /** Return session metrics for the given session ID, or null. */
+  
   getSessionMetrics(sessionId: string | null): SessionMetrics | null {
     if (!sessionId) return null;
     return this.sessionMetrics.get(sessionId) ?? null;
   }
 
-  /** Compute and return the current metrics snapshot. */
+  
   getMetrics(): MetricsData {
     const now = Date.now();
     const uptime = (now - this.startTime) / 1000;
 
-    // Active sessions: activity within last 30 minutes
+    
     const thirtyMinutesAgo = new Date(now - 30 * 60 * 1000);
     const activeSessions = Array.from(this.sessionMetrics.values()).filter(
       (session) => session.lastActivity > thirtyMinutesAgo,
     );
 
-    // Top pages (top 5 by view count)
+    
     const topPages: TopPage[] = Array.from(this.pageMetrics.entries())
       .map(([path, data]) => ({
         path,
@@ -150,10 +150,10 @@ export class MetricsCollector {
         totalPageViews > 0 ? (page.views / totalPageViews) * 100 : 0,
     }));
 
-    // Traffic sources
+    
     const trafficSources = this.analyzeTrafficSources();
 
-    // Average session duration
+    
     const sessionDurations = activeSessions.map(
       (session) =>
         session.lastActivity.getTime() - session.startTime.getTime(),
@@ -166,7 +166,7 @@ export class MetricsCollector {
     const avgDurationMinutes = Math.floor(avgDurationMs / 60000);
     const avgDurationSeconds = Math.floor((avgDurationMs % 60000) / 1000);
 
-    // Bounce rate
+    
     const singlePageSessions = Array.from(
       this.sessionMetrics.values(),
     ).filter((session) => session.pageViews === 1).length;
@@ -199,7 +199,7 @@ export class MetricsCollector {
     };
   }
 
-  /** Stop all timers and persist data one final time. */
+  
   destroy(): void {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
@@ -212,11 +212,11 @@ export class MetricsCollector {
     this.persistData();
   }
 
-  // ---------------------------------------------------------------------------
-  // Internal helpers
-  // ---------------------------------------------------------------------------
+  
+  
+  
 
-  /** Analyze traffic sources from referrer data across all sessions. */
+  
   analyzeTrafficSources(): TrafficSource[] {
     const sources = new Map<string, number>();
 
@@ -236,7 +236,7 @@ export class MetricsCollector {
       .sort((a, b) => b.visits - a.visits);
   }
 
-  /** Categorize a referrer URL into a traffic source bucket. */
+  
   categorizeReferrer(referrer?: string): string {
     if (!referrer || referrer === '') {
       return 'Direct';
@@ -246,7 +246,7 @@ export class MetricsCollector {
       const url = new URL(referrer);
       const domain = url.hostname.toLowerCase();
 
-      // Social media
+      
       if (
         domain.includes('facebook.com') ||
         domain.includes('twitter.com') ||
@@ -258,7 +258,7 @@ export class MetricsCollector {
         return 'Social Media';
       }
 
-      // Search engines
+      
       if (
         domain.includes('google.') ||
         domain.includes('bing.com') ||
@@ -268,7 +268,7 @@ export class MetricsCollector {
         return 'Search';
       }
 
-      // Internal / same domain
+      
       if (
         domain.includes('stonewallunderground.com') ||
         domain.includes('localhost')
@@ -282,7 +282,7 @@ export class MetricsCollector {
     }
   }
 
-  /** Remove sessions inactive for more than 24 hours. */
+  
   cleanupOldSessions(): void {
     const logger = getMetricsConfig().getLogger();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -303,7 +303,7 @@ export class MetricsCollector {
     }
   }
 
-  /** Load previously persisted page and session data from disk. */
+  
   async loadPersistedData(): Promise<void> {
     const cfg = getMetricsConfig();
     const logger = cfg.getLogger();
@@ -357,7 +357,7 @@ export class MetricsCollector {
     }
   }
 
-  /** Persist current metrics to disk as JSON. */
+  
   async persistData(): Promise<void> {
     const cfg = getMetricsConfig();
     const logger = cfg.getLogger();
@@ -390,18 +390,18 @@ export class MetricsCollector {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Factory and singleton helpers
-// ---------------------------------------------------------------------------
 
-/** Create a fresh MetricsCollector instance. */
+
+
+
+
 export function createMetricsCollector(): MetricsCollector {
   return new MetricsCollector();
 }
 
 let singletonInstance: MetricsCollector | null = null;
 
-/** Lazy singleton getter for backward compatibility. */
+
 export function getMetricsCollector(): MetricsCollector {
   if (!singletonInstance) {
     singletonInstance = new MetricsCollector();
@@ -409,10 +409,10 @@ export function getMetricsCollector(): MetricsCollector {
   return singletonInstance;
 }
 
-/**
- * Reset the singleton (for testing purposes).
- * Destroys the existing instance if present.
- */
+
+
+
+
 export function resetMetricsCollectorSingleton(): void {
   if (singletonInstance) {
     singletonInstance.destroy();
