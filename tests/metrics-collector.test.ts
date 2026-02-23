@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { configureMetrics, resetMetricsConfig } from '../src/config.js';
 
-// Mock fs/promises before importing metrics-collector
+
 vi.mock('fs/promises', () => ({
 	readFile: vi.fn().mockRejectedValue(new Error('ENOENT')),
 	writeFile: vi.fn().mockResolvedValue(undefined),
@@ -49,7 +49,7 @@ describe('MetricsCollector', () => {
 
 		it('tracks unique visitors per page', () => {
 			collector.trackPageView('s1', '/home');
-			collector.trackPageView('s1', '/home'); // same session
+			collector.trackPageView('s1', '/home'); 
 			collector.trackPageView('s2', '/home');
 			const metrics = collector.getMetrics();
 			expect(metrics.topPages[0].uniqueVisitors).toBe(2);
@@ -139,14 +139,14 @@ describe('MetricsCollector', () => {
 
 		it('excludes inactive users from activeUsers', () => {
 			collector.trackPageView('s1', '/');
-			vi.advanceTimersByTime(31 * 60 * 1000); // 31 minutes
+			vi.advanceTimersByTime(31 * 60 * 1000); 
 			expect(collector.getMetrics().activeUsers).toBe(0);
 		});
 
 		it('calculates bounceRate for single-page sessions', () => {
-			collector.trackPageView('s1', '/'); // bounce
+			collector.trackPageView('s1', '/'); 
 			collector.trackPageView('s2', '/');
-			collector.trackPageView('s2', '/about'); // not bounce
+			collector.trackPageView('s2', '/about'); 
 			expect(collector.getMetrics().bounceRate).toBe(50);
 		});
 
@@ -158,7 +158,7 @@ describe('MetricsCollector', () => {
 			for (let i = 0; i < 6; i++) {
 				collector.trackPageView(`s${i}`, `/page-${i}`);
 			}
-			// Add extra views to page-0
+			
 			collector.trackPageView('extra1', '/page-0');
 			collector.trackPageView('extra2', '/page-0');
 			const top = collector.getMetrics().topPages;
@@ -290,14 +290,14 @@ describe('MetricsCollector', () => {
 	describe('cleanupOldSessions', () => {
 		it('removes sessions older than 24 hours', () => {
 			collector.trackPageView('s1', '/');
-			vi.advanceTimersByTime(25 * 60 * 60 * 1000); // 25 hours
+			vi.advanceTimersByTime(25 * 60 * 60 * 1000); 
 			collector.cleanupOldSessions();
 			expect(collector.getMetrics().totalVisitors).toBe(0);
 		});
 
 		it('keeps recent sessions', () => {
 			collector.trackPageView('s1', '/');
-			vi.advanceTimersByTime(12 * 60 * 60 * 1000); // 12 hours
+			vi.advanceTimersByTime(12 * 60 * 60 * 1000); 
 			collector.cleanupOldSessions();
 			expect(collector.getMetrics().totalVisitors).toBe(1);
 		});
@@ -361,7 +361,7 @@ describe('MetricsCollector', () => {
 		it('persists data on destroy', async () => {
 			collector.trackPageView('s1', '/');
 			collector.destroy();
-			// writeFile should be called for page + session metrics
+			
 			expect(writeFile).toHaveBeenCalled();
 		});
 	});

@@ -25,7 +25,7 @@ describe('metrics config', () => {
 			expect(logger.warn).toBeTypeOf('function');
 			expect(logger.error).toBeTypeOf('function');
 			expect(logger.debug).toBeTypeOf('function');
-			// Should not throw
+			
 			logger.info('test');
 			logger.warn('test');
 			logger.error('test');
